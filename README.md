@@ -7,6 +7,56 @@ This project is part of an internship where our team worked on developing a deep
 
 The project began with an investigation of traditional image fusion methods and evolved into a robust deep learning solution. We explored various techniques, evaluated their strengths and limitations, and finally adopted an encoder-decoder network (dubbed **FusionNet**) to perform the fusion task.
 
+## Flowchart
+```mermaid
+flowchart TD
+    %% Main Workflow
+    A[Start] --> B[Load Image Pairs]
+    B --> C[Split into Train/Test Sets]
+    C --> D[Create DataLoaders]
+    D --> E[Initialize FusionNet Model]
+    E --> F[Train Model for NUM_EPOCHS]
+    F --> G1[Evaluate on Training Set]
+    F --> G2[Evaluate on Testing Set]
+    G1 --> H[Report Final SSIM Scores]
+    G2 --> H
+    
+    %% Dataset Processing
+    I[FusionDataset] --> I1[Load Source1 & Source2 Images]
+    I1 --> I2[Transform & Convert to Tensor]
+    I2 --> I3[Concatenate Sources to 6-channel Input]
+    I3 --> I4[Return Input & Ground Truth]
+    
+    %% Neural Network Architecture
+    M[Input: 6-channel tensor] --> N[Encoder]
+    N --> N1[Conv Block: 6→64 channels]
+    N1 --> N2[Conv Block: 64→128 channels]
+    N2 --> N3[Conv Block: 128→256 channels]
+    N3 --> O[Decoder]
+    O --> O1[Conv Block: 256→128 channels]
+    O1 --> O2[Conv Block: 128→64 channels]
+    O2 --> O3[Conv Layer: 64→3 channels]
+    O3 --> O4[Sigmoid Activation]
+    O4 --> P[Output: Fused RGB Image]
+    
+    %% Training Process
+    R[Get Batch of Images] --> S[Forward Pass]
+    S --> T[Calculate MSE Loss]
+    T --> U[Backpropagation]
+    U --> V[Update Weights]
+    
+    %% Evaluation Process
+    X[Pass Test Images through Model] --> Y[Calculate SSIM]
+    Y --> Z[Display Comparison Images]
+    Z --> AA[Calculate Average SSIM]
+
+    %% Connections between components
+    B --- I
+    F --- R
+    G1 --- X
+    G2 --- X
+```
+
 ## Research and Initial Exploration
 
 ### Classical Methods
