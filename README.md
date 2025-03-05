@@ -32,11 +32,22 @@ The limitations observed in classical methods led us to explore a learning-based
 
 ## Developing the Deep Learning Solution
 
-### Data Preparation
-- **Custom Dataset:**  
-  A `FusionDataset` class was created to load, preprocess, and concatenate the two source images into a 6-channel input for the network.
-- **Consistency:**  
-  Standardized image resizing and tensor conversion ensured that all image pairs were uniformly processed.
+## Dataset
+
+### MFI-WHU Image Dataset
+
+The **MFI-WHU** dataset is a benchmark designed for multi-focus image fusion. It was synthetically constructed by combining and processing images from public datasets. Key characteristics include:
+
+- **Composition:**  
+  Consists of 120 image pairs. Each pair includes two source images—one representing the focused region and the other representing the defocused (blurred) area—as well as the corresponding full-clear image that serves as ground truth.
+
+- **Synthetic Construction:**  
+  Rather than being captured directly with a multi-focus camera system, the dataset was generated using image processing techniques (e.g., Gaussian filtering) on segmented clear images. This approach expands the available data volume for fusion evaluation, although the resulting scenarios are relatively simple compared to real-world captured images.
+
+- **Usage:**  
+  Widely employed as a benchmark for evaluating multi-focus image fusion algorithms, the MFI-WHU dataset provides a controlled environment to assess how well fusion methods can recover detailed information from partially focused images.
+
+---
 
 ### Model Architecture: FusionNet
 - **Encoder:**  
@@ -45,6 +56,26 @@ The limitations observed in classical methods led us to explore a learning-based
   Reconstructs these features into a 3-channel fused image using multiple convolutional blocks and a final Sigmoid activation to scale pixel values between 0 and 1.
 - **Modular Design:**  
   The use of helper convolutional blocks allowed for easier experimentation and fine-tuning of network parameters.
+
+
+---
+
+### Evaluation Metric: Structural Similarity Index (SSIM)
+
+For assessing the quality of our multi-focus image fusion results, we rely on the **Structural Similarity Index (SSIM)**. SSIM is widely used in image processing because it measures the perceived similarity between two images in terms of luminance, contrast, and structural information. Key points include:
+
+- **Perceptual Relevance:**  
+  SSIM compares local patterns of pixel intensities that have been normalized for luminance and contrast, making it well suited for evaluating how closely the fused image matches the clear, ground-truth image.
+
+- **Computation:**  
+  The metric is computed over local windows (typically using a sliding window approach), and then the local SSIM values are averaged to yield a global similarity score that ranges from 0 to 1. A score closer to 1 indicates a higher similarity and better fusion quality.
+
+- **Robustness:**  
+  Since SSIM takes into account changes in structural information rather than simply pixel-by-pixel differences, it correlates better with human visual perception than traditional metrics such as Mean Squared Error (MSE) or Peak Signal-to-Noise Ratio (PSNR).
+
+In our experiments, SSIM is computed for each fused image relative to its corresponding full-clear (ground-truth) image, and the average SSIM score across the dataset serves as a quantitative indicator of the overall fusion performance.
+
+---
 
 ### Evaluation and Iterative Refinement
 - **Loss Function:**  
@@ -63,6 +94,9 @@ After weeks of iterative improvements, the final solution demonstrated:
   The encoder-decoder architecture effectively balanced between capturing fine details and smoothing artifacts.
 - **Robustness:**  
   The model showed improved resistance to noise, a challenge often seen in classical wavelet-based methods.
+
+  ![image](https://github.com/user-attachments/assets/dfccc412-8066-4080-a136-390a3c17f625)
+
 
 ## Reflection
 
